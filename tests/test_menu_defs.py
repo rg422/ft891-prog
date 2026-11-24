@@ -94,6 +94,16 @@ def test_beacon_interval_steps():
     assert not beacon.is_valid(700)
 
 
+def test_every_menu_item_has_help_text():
+    from ft891prog.menu_help import MENU_HELP
+
+    assert set(MENU_HELP) == set(MENU_BY_NUMBER)
+    for number, text in MENU_HELP.items():
+        assert len(text) >= 40, number
+        assert "  " not in text, number          # no doubled spaces from string joins
+        assert text.rstrip()[-1] in ".)", number  # complete sentences
+
+
 def test_cat_rate_item():
     item = MENU_BY_NUMBER[CAT_RATE]
     assert item.display(3) == "38400 bps"

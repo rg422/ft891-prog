@@ -11,6 +11,9 @@ profile file for backup and restore, and import or export memory channels as CSV
 - **Menu settings**: every menu item 01-01 to 16-23 (158 items, plus the firmware versions in
   18-xx). Values are shown as the radio shows them (`300 msec`, `ELEKEY-B`, `+5 kHz`...), with
   factory defaults, allowed ranges and the exact CAT command for each item.
+- **Built-in help**: select any menu item to see a plain-language explanation of what it does
+  and when you would change it. The search box also searches these descriptions, so typing
+  "amplifier" or "VOX" finds the relevant items.
 - **Memory channels**: 01-99 and the PMS pairs P1L-P9U, with frequency, mode, 12-character tag
   (and whether the radio displays the tag or the frequency), clarifier, CTCSS mode and repeater
   shift. The 60 m channels (5-01 to 5-10) and EMG are shown read-only.
@@ -116,6 +119,7 @@ read/write sessions against the simulator.
 | --- | --- |
 | `ft891prog/cat.py` | Serial port setup, `;`-framed request/response, error and timeout handling, baud probing |
 | `ft891prog/menu_defs.py` | Every EX menu item: CAT number, width, encoding, labels, ranges, defaults |
+| `ft891prog/menu_help.py` | Plain-language description of every menu item, shown in the Settings tab |
 | `ft891prog/memory.py` | Memory channel model and `MR` / `MW` / `MT` encoding, frequency parsing |
 | `ft891prog/radio.py` | High-level read/write of menus and memories, with verification |
 | `ft891prog/simulator.py` | FT-891 CAT emulator used by the `SIMULATOR` port and the tests |
@@ -123,12 +127,21 @@ read/write sessions against the simulator.
 | `ft891prog/storage.py` | JSON profiles and CSV import/export |
 | `ft891prog/gui/` | Tkinter user interface |
 | `build.ps1` | PyInstaller build |
+| `docs/manuals/` | Local copies of the Yaesu manuals (not committed) and where to download them |
 
 ### Protocol references
 
 - Yaesu *FT-891 CAT Operation Reference Book*: command formats, EX menu table, memory channel
   layout.
-- Yaesu *FT-891 Advance Manual*: menu names, ranges and factory defaults.
+- Yaesu *FT-891 Advance Manual*: menu names, ranges, factory defaults, and what each menu item
+  does.
+- Yaesu *FT-891 Operating Manual*: installation and basic operation.
+
+See [docs/manuals/README.md](docs/manuals/README.md) for download links.
+
+The Advance Manual contradicts itself on three factory defaults: 14-06 AM CH STEP (5 or
+2.5 kHz), 16-07 SSB MIC GAIN and 16-08 AM MIC GAIN (50 or 30). The program uses the menu
+table's values (5 kHz, 50 and 50), and the help text for those items mentions the discrepancy.
 
 One known erratum: the CAT manual gives menu 09-05 (RPT SHIFT 50MHz) a 1-digit parameter, but
 its range (0000-4000) needs 4. The program uses 4. When writing, it always uses the field width

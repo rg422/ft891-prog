@@ -19,3 +19,6 @@ Thumbs.db
 
 # Local data
 *.log
+
+# Yaesu's manuals are copyrighted: keep local copies only (see docs/manuals/README.md)
+docs/manuals/*.pdf

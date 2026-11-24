@@ -8,6 +8,7 @@ from tkinter import ttk
 from typing import TYPE_CHECKING, Optional
 
 from ..menu_defs import GROUPS, MENU_BY_NUMBER, MENU_ITEMS, MenuItem
+from ..menu_help import help_text
 from .widgets import CellEditor, ui_scale
 
 if TYPE_CHECKING:
@@ -40,7 +41,7 @@ class SettingsTab(ttk.Frame):
 
         bar2 = ttk.Frame(self)
         bar2.pack(fill="x", pady=(0, 6))
-        ttk.Label(bar2, text="Filter:").pack(side="left", padx=(0, 4))
+        ttk.Label(bar2, text="Search:").pack(side="left", padx=(0, 4))
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add("write", lambda *_: self.populate())
         ttk.Entry(bar2, textvariable=self.filter_var, width=24).pack(side="left", padx=(0, 10))
@@ -48,9 +49,19 @@ class SettingsTab(ttk.Frame):
         ttk.Checkbutton(bar2, text="Show changed items only", variable=self.changed_only,
                         command=self.populate).pack(side="left")
 
-        self.info = ttk.Label(self, text="", anchor="w", justify="left")
+        # Help panel for the selected item (fixed height so the table doesn't jump around).
+        base_font = tkfont.nametofont("TkDefaultFont")
+        bold = base_font.copy()
+        bold.configure(weight="bold")
+        self._bold = bold
+        bg = ttk.Style(self).lookup("TFrame", "background") or "#f0f0f0"
+        self.info = tk.Text(self, height=6, wrap="word", relief="flat", borderwidth=0,
+                            padx=4, pady=4, font=base_font, background=bg, cursor="arrow",
+                            takefocus=False, state="disabled")
         self.info.pack(side="bottom", fill="x", pady=(6, 0))
-        self.info.bind("<Configure>", lambda e: self.info.configure(wraplength=max(200, e.width - 10)))
+        self.info.tag_configure("title", font=bold)
+        self.info.tag_configure("meta", foreground="#5a5a5a")
+        self.info.tag_configure("note", foreground="#a15c00")
 
         # ------------------------------------------------------------- tree
         frame = ttk.Frame(self)
@@ -73,9 +84,6 @@ class SettingsTab(ttk.Frame):
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
 
-        bold = tkfont.nametofont("TkDefaultFont").copy()
-        bold.configure(weight="bold")
-        self._bold = bold
         self.tree.tag_configure("group", font=bold)
         self.tree.tag_configure("changed", background="#fff1b8")
         self.tree.tag_configure("readonly", foreground="#808080")
@@ -104,7 +112,7 @@ class SettingsTab(ttk.Frame):
             return False
         if not text:
             return True
-        hay = f"{item.label} {item.number} {item.name} {item.group_name}".lower()
+        hay = f"{item.label} {item.number} {item.name} {item.group_name} {help_text(item.number)}".lower()
         return all(word in hay for word in text.lower().split())
 
     def populate(self) -> None:
@@ -157,30 +165,43 @@ class SettingsTab(ttk.Frame):
             status,
         ), tags=tags)
 
+    def _set_info(self, chunks: list[tuple[str, str]]) -> None:
+        self.info.configure(state="normal")
+        self.info.delete("1.0", "end")
+        for text, tag in chunks:
+            self.info.insert("end", text, (tag,) if tag else ())
+        self.info.configure(state="disabled")
+
     def _show_info(self) -> None:
         sel = [s for s in self.tree.selection() if s in MENU_BY_NUMBER]
         if not sel:
-            self.info.configure(text="Double-click a value (or press Enter) to edit it. "
-                                     "Changed values are highlighted until they are written to the radio.")
+            self._set_info([
+                ("Select a menu item to see what it does.", "title"),
+                ("\nDouble-click a value (or press Enter) to edit it. Changed values are highlighted "
+                 "until they are written to the radio.", ""),
+            ])
             return
         item = MENU_BY_NUMBER[sel[0]]
         value = self.model.values.get(item.number)
-        parts = [f"{item.label} {item.name}  ({item.group_name})"]
-        if value is not None:
-            try:
-                parts.append(f"CAT: EX{item.number}{item.encode(value)};")
-            except ValueError:
-                pass
-        parts.append(f"Allowed: {item.range_text()}")
+        meta = [f"Allowed: {item.range_text()}"]
         if item.default is not None:
-            parts.append(f"Default: {item.display(item.default)}")
+            meta.append(f"Default: {item.display(item.default)}")
         radio = self.model.radio.get(item.number)
         if radio is not None:
-            parts.append(f"In radio: {item.display(radio)}")
-        text = "   |   ".join(parts)
+            meta.append(f"In radio: {item.display(radio)}")
+        if value is not None:
+            try:
+                meta.append(f"CAT: EX{item.number}{item.encode(value)};")
+            except ValueError:
+                pass
+        chunks = [(f"{item.label}  {item.name}", "title"), (f"   ({item.group_name})", "meta")]
+        description = help_text(item.number)
+        if description:
+            chunks.append(("\n" + description, ""))
         if item.note:
-            text += "\n" + item.note
-        self.info.configure(text=text)
+            chunks.append(("\n" + item.note, "note"))
+        chunks.append(("\n" + "   |   ".join(meta), "meta"))
+        self._set_info(chunks)
 
     # ------------------------------------------------------------- editing
     def _on_double_click(self, event: tk.Event) -> Optional[str]:
