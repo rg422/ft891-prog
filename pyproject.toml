@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ft891prog"
+dynamic = ["version"]
+description = "Read, edit and write Yaesu FT-891 menu settings and memory channels over CAT"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pyserial>=3.5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pyinstaller>=6.10"]
+
+[project.gui-scripts]
+ft891prog = "ft891prog.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "ft891prog.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["ft891prog*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
