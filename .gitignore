@@ -6,10 +6,10 @@ __pycache__/
 .venv/
 venv/
 
-# PyInstaller
+# PyInstaller (build.ps1 regenerates the .spec on every build)
 build/
 dist/
-*.spec.bak
+FT891Programmer.spec
 
 # Editors / OS
 .vscode/
