@@ -4,6 +4,7 @@
 #   .\build.ps1 -SkipTests
 #
 # Output: dist\FT891Programmer.exe and dist\FT891Programmer-v<version>-win64.zip
+#         (the zip holds the exe, README.md and LICENSE)
 
 param([switch]$SkipTests)
 
@@ -53,7 +54,7 @@ Invoke-Checked $py @(
 
 $zip = "dist\FT891Programmer-v$version-win64.zip"
 if (Test-Path $zip) { Remove-Item $zip }
-Compress-Archive -Path "dist\FT891Programmer.exe", "README.md" -DestinationPath $zip
+Compress-Archive -Path "dist\FT891Programmer.exe", "README.md", "LICENSE" -DestinationPath $zip
 
 Write-Host ""
 Write-Host "Done:"

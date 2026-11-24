@@ -802,6 +802,7 @@ class App:
             "radio's USB CAT port.\n\n"
             "Based on the Yaesu FT-891 CAT Operation Reference Book.\n"
             "Not affiliated with Yaesu Musen Co., Ltd.\n\n"
+            "Copyright (c) 2026 Ryan Gedminas. Released under the MIT License.\n\n"
             "Always save a backup profile before writing to your radio.",
             parent=self.root)
 

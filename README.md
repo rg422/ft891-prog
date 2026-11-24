@@ -143,6 +143,14 @@ The Advance Manual contradicts itself on three factory defaults: 14-06 AM CH STE
 2.5 kHz), 16-07 SSB MIC GAIN and 16-08 AM MIC GAIN (50 or 30). The program uses the menu
 table's values (5 kHz, 50 and 50), and the help text for those items mentions the discrepancy.
 
+## License
+
+[MIT](LICENSE) © 2026 Ryan Gedminas.
+
+Yaesu and FT-891 are trademarks of Yaesu Musen Co., Ltd. The Yaesu manuals referenced in
+[docs/manuals](docs/manuals/README.md) are Yaesu's copyrighted documents and are not covered by
+this license or included in the repository.
+
 One known erratum: the CAT manual gives menu 09-05 (RPT SHIFT 50MHz) a 1-digit parameter, but
 its range (0000-4000) needs 4. The program uses 4. When writing, it always uses the field width
 the radio itself returned when that item was read.
