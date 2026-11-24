@@ -12,7 +12,15 @@ Set-Location $PSScriptRoot
 
 function Invoke-Checked {
     param([string]$Exe, [string[]]$Arguments)
-    & $Exe @Arguments
+    # pip and PyInstaller log progress to stderr; Windows PowerShell 5.1 would turn those lines
+    # into terminating errors under "Stop", so judge success by the exit code alone.
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $Exe @Arguments
+    } finally {
+        $ErrorActionPreference = $previous
+    }
     if ($LASTEXITCODE -ne 0) { throw "$Exe $($Arguments -join ' ') failed with exit code $LASTEXITCODE" }
 }
 
