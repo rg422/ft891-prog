@@ -354,7 +354,8 @@ MENU_ITEMS: tuple[MenuItem, ...] = (
     _enum("1204", "IF NOTCH WIDTH", ["NARROW", "WIDE"], 1),
     # 13 SCOPE
     _enum("1301", "SCP START CYCLE", ["OFF", "3 sec", "5 sec", "10 sec"], 0),
-    _enum("1302", "SCP SPAN FREQ", ["37.5 kHz", "75 kHz", "150 kHz", "375 kHz", "750 kHz"], 4),
+    # The CAT manual lists 1 digit for 13-02, but the radio answers with 2 (EX130204).
+    _enum("1302", "SCP SPAN FREQ", ["37.5 kHz", "75 kHz", "150 kHz", "375 kHz", "750 kHz"], 4, digits=2),
     # 14 TUNING
     _enum("1401", "QUICK DIAL", ["50 kHz", "100 kHz", "500 kHz"], 2),
     _enum("1402", "SSB DIAL STEP", ["2 Hz", "5 Hz", "10 Hz"], 2),

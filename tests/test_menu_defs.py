@@ -41,6 +41,7 @@ def test_every_legal_value_fits_its_width():
     ("0403", 30, "30"),
     ("0905", 1000, "1000"),
     ("0601", 0, "00"),
+    ("1302", 4, "04"),
     ("1601", 5, "005"),
 ])
 def test_encode(number, raw, p2):

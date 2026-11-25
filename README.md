@@ -143,6 +143,25 @@ The Advance Manual contradicts itself on three factory defaults: 14-06 AM CH STE
 2.5 kHz), 16-07 SSB MIC GAIN and 16-08 AM MIC GAIN (50 or 30). The program uses the menu
 table's values (5 kHz, 50 and 50), and the help text for those items mentions the discrepancy.
 
+Two known errata in the CAT manual's menu table, confirmed on a real radio:
+
+- 09-05 RPT SHIFT 50MHz is listed with a 1-digit parameter, but its range (0000-4000) needs 4.
+- 13-02 SCP SPAN FREQ is listed with 1 digit, but the radio answers with 2 (`EX130204;`).
+
+The program uses the widths the radio actually sends. When writing, it always uses the field width
+the radio itself returned when that item was read.
+
+### Tested with
+
+Checked against an FT-891 with firmware MAIN V01-10, DSP V02-05 and LCD V01-01:
+
+- Reading every menu item and memory channel, including memory tags with `MT`.
+- Writing 41 memory channels with tags (`MT`), and changing and restoring a menu item, all
+  verified by reading back.
+
+On that radio, the channel number in an `MR` / `MT` answer is the radio's current memory channel,
+not the one asked for. The program ignores it and uses the channel it requested.
+
 ## License
 
 [MIT](LICENSE) © 2026 Ryan Gedminas.
@@ -150,7 +169,3 @@ table's values (5 kHz, 50 and 50), and the help text for those items mentions th
 Yaesu and FT-891 are trademarks of Yaesu Musen Co., Ltd. The Yaesu manuals referenced in
 [docs/manuals](docs/manuals/README.md) are Yaesu's copyrighted documents and are not covered by
 this license or included in the repository.
-
-One known erratum: the CAT manual gives menu 09-05 (RPT SHIFT 50MHz) a 1-digit parameter, but
-its range (0000-4000) needs 4. The program uses 4. When writing, it always uses the field width
-the radio itself returned when that item was read.

@@ -190,6 +190,8 @@ class FT891:
             ans = self.cat.query(f"MR{ch};", "MR")
         except CatRejected:
             return None
+        # Use the requested channel, not the answer's P1: a real FT-891 puts its
+        # current memory channel there (MT009; can answer MT041...).
         mem = parse_memory_answer(ans).with_channel(ch)
         if self.tag_read_supported is not False:
             try:
